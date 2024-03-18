@@ -1,4 +1,5 @@
-﻿using HRMS.Core.Models.SProc;
+﻿using HRMS.Core.Models.Pagging;
+using HRMS.Core.Models.SProc;
 using HRMS.Core.Models.Users;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace HRMS.Data.Repository.Users
         Task<(SpBaseMessageResponse,AppRole)> GetRolesByIdAsync (int id);
         Task<(SpBaseMessageResponse,AppRole)> GetRolesByNameAsync(string roleName);
         Task<(SpBaseMessageResponse,AppRole)>UpdateRolesAsync(AppRole appRole);
+       
        
 
 

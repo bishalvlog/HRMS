@@ -11,6 +11,8 @@ using HRMS.Services.Token;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Client;
+using System.Data;
 using System.Net;
 using System.Security.Claims;
 
@@ -87,5 +89,43 @@ namespace HRMS.Services.Users
                 userWithOutCreds.ProfileImagePath = string.Concat(_config["ApiURL"], userWithOutCreds.ProfileImagePath);
             return (HttpStatusCode.OK,new ApiResponseDto { Success = true, Message = "OK", Data = userWithOutCreds });
         }
+        public async Task<(HttpStatusCode, ApiResponseDto)> UpdateUserAsync(UpdateUserDto updateUserDto)
+        {
+            var (spMsgResponse, useExists) = await _usersRepository.GetUserByIdAsync(updateUserDto.Id);
+            if (spMsgResponse.StatusCode != 200 || useExists is null)
+                return (HttpStatusCode.OK, new ApiResponseDto
+                {
+                    Success = false,
+                    Message = AppString.NotFound,
+                    Errors = new() { AppString.Forbidden }
+                });
+            var userToBeUpdate = _mapper.Map(updateUserDto,useExists);
+            string imagePath = null;
+            if(updateUserDto.ProfileImage != null)
+            {
+                var folderPath = _config["Folder:UserProfileImage"];
+                imagePath = await FileUploadHelper.UploadFile(_hostEnv, folderPath, updateUserDto.ProfileImage);
+                userToBeUpdate.ProfileImagePath = imagePath;
+            }
+
+            userToBeUpdate.UpdatedBy = _loggedInUser.Claims.FirstOrDefault(x => x.Type == UserClaimTypes.UserName)?.Value;
+
+            var (spMessage, userUpdate) = await _usersRepository.UpdateUserAsync(userToBeUpdate);
+
+             var userUpdatedWithoutCreds = _mapper.Map<AppUserOutCred>(userUpdate);
+
+            if(spMessage.StatusCode != 200)
+            {
+                if(!String.IsNullOrWhiteSpace(imagePath))
+                {
+                    var imageToDeletePath = Path.Combine("" + _hostEnv.WebRootPath, imagePath[1..]);
+                    File.Delete(imageToDeletePath);
+                }
+                return GetErrorResponseFromSprocMessage(spMessage);
+            }
+            return (HttpStatusCode.OK,
+                new ApiResponseDto { Success = true,Message = $"User {userToBeUpdate.UserName} update Successfully", Data = userUpdatedWithoutCreds });
+        }
+       
     }
 }

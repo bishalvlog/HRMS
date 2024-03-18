@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Comman\Helper\" />
     <Folder Include="Configuration\" />
-    <Folder Include="Dtos\" />
     <Folder Include="Events\" />
     <Folder Include="Extensions\" />
   </ItemGroup>

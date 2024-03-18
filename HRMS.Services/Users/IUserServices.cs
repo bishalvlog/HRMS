@@ -13,5 +13,6 @@ namespace HRMS.Services.Users
     {
         Task<(HttpStatusCode, ApiResponseDto)> GetUserByIdAsync(int userId);
         Task<(HttpStatusCode, ApiResponseDto)> CreateUserAsync(CreateUserDto createUserDto);
+        Task<(HttpStatusCode, ApiResponseDto)> UpdateUserAsync(UpdateUserDto updateUserDto);
     }
 }
