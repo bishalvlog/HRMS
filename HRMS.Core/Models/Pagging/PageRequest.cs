@@ -28,7 +28,7 @@ namespace HRMS.Core.Models.Pagging
             get => _pageNumber;
             set => _pageNumber = Math.Max(value, 1);
         }
-        public virtual string SeachVal
+        public virtual string SearchVal
         {
             get => _searchVal;
             set => _searchVal = String.IsNullOrWhiteSpace(value) ? string.Empty : value;
@@ -38,7 +38,7 @@ namespace HRMS.Core.Models.Pagging
             get => _sortOrder;
             set => _sortOrder = String.IsNullOrWhiteSpace(value) ? string.Empty : value;
         }
-        public virtual  string OrderBy
+        public virtual  string SortBy
         {
             get => _sortBy;
             set => _sortBy = String.IsNullOrWhiteSpace(value) ? string.Empty : value;

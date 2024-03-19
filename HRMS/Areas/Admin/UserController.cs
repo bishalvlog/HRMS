@@ -1,5 +1,6 @@
 ﻿using HRMS.Controllers;
 using HRMS.Core.Domain;
+using HRMS.Core.Dtos.Users;
 using HRMS.Core.Interfaces.Users;
 using HRMS.Core.Models.Users;
 using HRMS.Data.Dtos.UserDto;
@@ -34,6 +35,12 @@ namespace HRMS.Areas.Admin
         {
             var (status, response) = await _userServices.GetUserByIdAsync(userId);
             return GetResponseFromStatusCode(status, response);
+        }
+        [HttpPost("Get_user_All")]
+        public async Task<IActionResult> GetUserAll([FromBody] UserListRequest request)
+        {
+            var (status, response) = await _userServices.GetUserAsync(request);
+            return GetResponseFromStatusCode(status, response); 
         }
 
     }

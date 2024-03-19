@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using HRMS.Core.Comman;
+using HRMS.Core.Dtos.Users;
 using HRMS.Core.Interfaces.Users;
+using HRMS.Core.Models.Pagging;
 using HRMS.Core.Models.Users;
 using HRMS.Data.Comman.Constrant;
 using HRMS.Data.Comman.Helpers;
@@ -77,6 +79,21 @@ namespace HRMS.Services.Users
             var userCreateWithOutCreds = _mapper.Map<AppUserOutCred>(create);
             return
                 (HttpStatusCode.OK, new ApiResponseDto { Success = true, Message = $"User {create.UserName} Registerd Successfully", Data = userCreateWithOutCreds });
+        }
+
+        public async Task<(HttpStatusCode, ApiResponseDto)> GetUserAsync(UserListRequest request)
+        {
+            var users = await _usersRepository.GetUsersAsync(request);
+            var userwithnoCred = _mapper.Map<PageResponse<AppUserOutCred>>(users);
+            userwithnoCred.Items = users.Items.Select(user =>
+            {
+                var userwithnoCreds = _mapper.Map<AppUserOutCred>(users);
+                if (!String.IsNullOrWhiteSpace(userwithnoCreds.ProfileImagePath))
+                    userwithnoCreds.ProfileImagePath = string.Concat(_config["ApiURL"], userwithnoCreds.ProfileImagePath);
+
+                return userwithnoCreds;
+            });
+            return (HttpStatusCode.OK, new ApiResponseDto { Success = true,Message = "OK", Data = userwithnoCred });
         }
 
         public async Task<(HttpStatusCode, ApiResponseDto)> GetUserByIdAsync(int userId)

@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using HRMS.Core.Dtos.Users;
 using HRMS.Core.Interfaces.Users;
 using HRMS.Core.Models.Pagging;
@@ -16,6 +17,11 @@ namespace HRMS.Data.Repository.Users
 {
     public class UserRepository : IUserRepository
     {
+        private readonly IMapper _mapper;
+        public UserRepository(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
         public async Task<(SpBaseMessageResponse, bool)> CheckUserExistsAsync(AppUser appUser)
         {
             try
@@ -166,9 +172,39 @@ namespace HRMS.Data.Repository.Users
             return (spMsg, user);
         }
 
-        public Task<PageResponse<AppUser>> GetUsersAsync(UserListRequest userListRequest)
+        public async Task<PageResponse<AppUser>> GetUsersAsync(UserListRequest request)
         {
-            
+
+            try
+            {
+                using var connection = DbConnectionManager.ConnectDb();
+                var param = new DynamicParameters();
+                param.Add("@UserName", request.UserName);
+                param.Add("@FullName", request.FullName);
+                param.Add("@Email", request.Email);
+                param.Add("@Mobile", request.Mobile);
+                param.Add("@PageNumber", request.PageNumber);
+                param.Add("@PageSize", request.PageSize);
+                param.Add("@SortingCol", request.SortBy);
+                param.Add("@SortType", request.SortOrder);
+                param.Add("@SearchVal", request.SearchVal);
+
+                using var resultSet = await connection
+                    .QueryMultipleAsync("[dbo].[sp_users_get_All]",param,commandType: CommandType.StoredProcedure);
+                var users = await resultSet.ReadAsync<AppUser>();
+                var paginginfo = await resultSet.ReadSingleAsync<PagedInfo>();
+                var pagedResponse = _mapper.Map<PageResponse<AppUser>>(paginginfo);
+                pagedResponse.Items = users;
+
+                return pagedResponse;
+
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+
+
         }
 
         public async Task<(SpBaseMessageResponse, AppUser)> UpdateUserAsync(AppUser appUser)
