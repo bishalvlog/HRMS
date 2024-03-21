@@ -1,3 +1,4 @@
+using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Interfaces.Users;
 using HRMS.Data.DataSeeder;
 using HRMS.Data.Repository.Users;
@@ -20,6 +21,7 @@ namespace HRMS
                     var userRepository = services.GetRequiredService<IUserRepository>();
                     var userRoleRepository = services.GetRequiredService<IUserRolesRepository>();
                     var roleRepository = services.GetRequiredService<IRolesRepository>();
+                    var menuRepository = services.GetRequiredService<IMenuRepository>();
 
                     await DataSeeder.SeedRolesAsync(roleRepository);
                     await DataSeeder.SeedUsersAsync(userRepository, roleRepository, userRoleRepository);

@@ -1,6 +1,8 @@
 ﻿using HRMS.Core.Comman;
 using HRMS.Core.Domain.Users;
+using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Interfaces.Users;
+using HRMS.Core.Models.Menu;
 using HRMS.Core.Models.Users;
 using HRMS.Data.Comman.Helpers;
 using HRMS.Data.Repository.Users;
@@ -128,6 +130,45 @@ namespace HRMS.Data.DataSeeder
                 if (roleAdmin is null) throw new Exception($"Role {UserRoles.Admin} not exits!");
                 var spMsgRes = await userRolesRepository.AssignUserToRolesAsync(userCreate.Id,roleAdmin.Id);
                 if (spMsgRes.StatusCode != 200) throw new Exception("Failedd Roles Assign !");
+            }
+        }
+
+        public static async Task SeedMenuAsync(IMenuRepository menuRepository)
+        {
+            try
+            {
+                var menuExists = await menuRepository.GetListAllAsync();
+                var menu = new List<MenuAddUpdate>
+                {
+                    new MenuAddUpdate
+                    {
+                        Title = "Menu Manager",
+                        ParentId = 0,
+                        MenuUrl = "/menu-manager",
+                        DisplayOrder = 3,
+                        IsActive = true,
+                        CreatedBy = "admin",
+                    },
+                    new MenuAddUpdate
+                    {
+                         Title = "User Manager",
+                        ParentId = 0,
+                        MenuUrl = "/user-manager",
+                        DisplayOrder = 4,
+                        IsActive = true,
+                        CreatedBy = "admin",
+                    }
+                };
+                var menuSeed = menu
+                    .Where(cm => !menuExists.Any(me => me.Title.Equals(cm.Title,StringComparison.OrdinalIgnoreCase)&& me.ParentId == cm.ParentId))
+                    .ToList();
+                if (!menuSeed.Any()) return;
+                //foreach (var m in menuSeed)
+                //    await menuRepository.AddAsync(m);
+            }
+            catch(Exception ex)
+            { 
+                Console.WriteLine(ex.Message);
             }
         }
             

@@ -14,6 +14,27 @@ namespace HRMS.Data.Repository.Menu
 {
     public class MenusRepository : IMenuRepository
     {
+        public async Task<int> AddAsync(MenuAddUpdate menuAddUpdate)
+        {
+            using var connection = DbConnectionManager.ConnectDb();
+
+            var param = new DynamicParameters();
+            param.Add("@Title", menuAddUpdate.Title);
+            param.Add("@ParentId", menuAddUpdate.ParentId);
+            param.Add("@MenuUrl", menuAddUpdate.MenuUrl);
+            param.Add("@IsActive", menuAddUpdate.IsActive);
+            param.Add("@DisplayOrder", menuAddUpdate.DisplayOrder);
+            param.Add("@ImagePath", menuAddUpdate.ImagePath);
+            param.Add("@CreatedBy", menuAddUpdate.CreatedBy);
+            param.Add("@sqlActionStatus", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+
+             await connection
+                .ExecuteAsync("[dbo].[sp_menu_Insert]",param,commandType:CommandType.StoredProcedure);
+            return param.Get<int>("@sqlActionStatus");
+
+
+        }
+
         public async Task<IEnumerable<Menus>> GetListAllAsync()
         {
             using var connection = DbConnectionManager.ConnectDb();
