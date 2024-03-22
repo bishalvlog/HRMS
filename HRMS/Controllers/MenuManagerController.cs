@@ -8,13 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HRMS.Controllers
 {
+    [Authorize(Policy =UserPolicies.HrmsAdmin)]
     public class MenuManagerController : BaseApiController
     {
         private readonly IMenusService _menuService;
+        private readonly IRoleMenuPermissionService _rmsMenuPermission;
 
-        public MenuManagerController(IMenusService menuService)
+        public MenuManagerController(IMenusService menuService, IRoleMenuPermissionService roleMenuPermissionService)
         {
             _menuService = menuService;
+            _rmsMenuPermission = roleMenuPermissionService;
+
         }
         [HttpGet]
         [Route("get-Menus-all")]
@@ -35,6 +39,14 @@ namespace HRMS.Controllers
         public async Task<IActionResult> AddMenu([FromForm] MenuModel menuModel)
         {
             var (statusCode, response) = await _menuService.AddMenuAsync(menuModel,User);
+            return GetResponseFromStatusCode(statusCode, response);
+        }
+        [HttpGet]
+        [Route("get-menu-by-id")]
+        [Authorize(Policy =UserPolicies.HrmsAdmin)]
+        public async Task<IActionResult> GetRoleMenuPermissonById(int roleId)
+        {
+            var (statusCode, response) = await _rmsMenuPermission.GetRoleMenuPermissionsByRoleIdAsync(roleId);
             return GetResponseFromStatusCode(statusCode, response);
         }
     }

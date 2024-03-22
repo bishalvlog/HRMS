@@ -5,15 +5,9 @@ using HRMS.Data.Comman.Helpers;
 using HRMS.Data.Dtos.Response;
 using HRMS.Services.Token;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HRMS.Services.Menu
 {

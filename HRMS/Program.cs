@@ -22,9 +22,12 @@ namespace HRMS
                     var userRoleRepository = services.GetRequiredService<IUserRolesRepository>();
                     var roleRepository = services.GetRequiredService<IRolesRepository>();
                     var menuRepository = services.GetRequiredService<IMenuRepository>();
+                    var roleMenuPermission = services.GetRequiredService<IRoleMenuPermissionRepository>();
 
                     await DataSeeder.SeedRolesAsync(roleRepository);
                     await DataSeeder.SeedUsersAsync(userRepository, roleRepository, userRoleRepository);
+                    await DataSeeder.SeedMenuAsync(menuRepository);
+
 
                     //var dbContent = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();
                     //dbContent.Database.Migrate();

@@ -5,6 +5,7 @@ using HRMS.Core.Interfaces.Users;
 using HRMS.Core.Models.Menu;
 using HRMS.Core.Models.Users;
 using HRMS.Data.Comman.Helpers;
+using HRMS.Data.Repository.Menu.Types;
 using HRMS.Data.Repository.Users;
 
 namespace HRMS.Data.DataSeeder
@@ -163,11 +164,54 @@ namespace HRMS.Data.DataSeeder
                     .Where(cm => !menuExists.Any(me => me.Title.Equals(cm.Title,StringComparison.OrdinalIgnoreCase)&& me.ParentId == cm.ParentId))
                     .ToList();
                 if (!menuSeed.Any()) return;
-                //foreach (var m in menuSeed)
-                //    await menuRepository.AddAsync(m);
+                    foreach (var m in menuSeed)
+                    await menuRepository.AddAsync(m);
             }
             catch(Exception ex)
             { 
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public static async Task SeedRoleMenuPermission(IRolesRepository rolesRepository, IMenuRepository menuRepository, IRoleMenuPermissionRepository _rmpRepository)
+        {
+            try
+            {
+                var (_, Admin) = await rolesRepository.GetRolesByNameAsync(UserRoles.Admin);
+                if(Admin == null) return;
+                var menuAll = await menuRepository.GetListAllAsync();
+                var roleMenuPermission = await _rmpRepository.GetListAsync();
+
+                var menuIdSeeds = menuAll
+                    .Where(m =>roleMenuPermission.All(rmp => rmp.MenuId != m.Id))
+                    .Select(m=> m.Id)   
+                    .ToList();
+                if(!menuIdSeeds.Any()) return;
+                var createdLocalDate = DateTime.Now;
+                var createdUTCDate = DateTime.UtcNow;
+                const string createdBy = "Admin";
+
+                var roleMenuPermissionSeeds = new List<RoleMenuPermissionTypes>();
+                menuIdSeeds.ForEach(menuId =>
+                {
+                    roleMenuPermissionSeeds.Add(new RoleMenuPermissionTypes
+                    {
+                        MenuId = menuId,
+                        ViewPer = true,
+                        UpdatePer = true,
+                        DeletePer = true,
+                        CreatedLocalDate = createdLocalDate,
+                        CreatedUTCDate = createdUTCDate,
+                        CreatedNepaliDate = _createdNepaliDate,
+                        CreatedBy = createdBy
+
+                    });
+
+                });
+                await _rmpRepository.
+            }
+            catch(Exception ex)
+            {
                 Console.WriteLine(ex.Message);
             }
         }
