@@ -3,6 +3,7 @@ using Dapper;
 using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Models.Menu;
 using HRMS.Data.Comman.Helpers;
+using HRMS.Data.Repository.Menu.Types;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,6 +20,12 @@ namespace HRMS.Data.Repository.Menu
         {
             _mapper = mapper;
         }
+
+        public Task<int> AddListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<RoleMenuPermissions>> GetByRoleMenu(int roleId)
         {
            using var connection = DbConnectionManager.ConnectDb();

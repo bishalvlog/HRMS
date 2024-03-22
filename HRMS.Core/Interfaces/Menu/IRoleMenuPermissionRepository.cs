@@ -1,4 +1,5 @@
 ﻿using HRMS.Core.Models.Menu;
+using HRMS.Data.Repository.Menu.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;

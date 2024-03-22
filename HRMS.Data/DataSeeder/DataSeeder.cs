@@ -208,7 +208,7 @@ namespace HRMS.Data.DataSeeder
                     });
 
                 });
-                await _rmpRepository.
+                //await _rmpRepository.
             }
             catch(Exception ex)
             {
