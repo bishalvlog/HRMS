@@ -21,9 +21,34 @@ namespace HRMS.Data.Repository.Menu
             _mapper = mapper;
         }
 
-        public Task<int> AddListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType)
+        public async Task<int> AddListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType)
         {
-            throw new NotImplementedException();
+            using var connection = DbConnectionManager.ConnectDb();
+
+            var dataTableRmp = GetDataTableRoleMenuPermissions();
+
+            foreach(var rmpType in listRoleMenuPermissionsType)
+            {
+                var row = dataTableRmp.NewRow();
+                row["MenuId"] = rmpType.MenuId;
+                row["ViewPer"] = rmpType.ViewPer;
+                row["CreatePer"] = rmpType.CreatePer;
+                row["UpdatePer"] = rmpType.UpdatePer;
+                row["DeletePer"] = rmpType.DeletePer;
+                row["UpdatedLocalDate"] = rmpType.UpdatedLocalDate!;
+                row["UpdatedUTCDate"] = rmpType.UpdatedUTCDate!;
+                row["UpdatedNepaliDate"] = rmpType.UpdatedNepaliDate;
+                row["UpdatedBy"] = rmpType.UpdatedBy;
+                dataTableRmp.Rows.Add(row);
+            }
+            var param = new DynamicParameters();
+            param.Add("@RoleId", roleId);
+            param.Add("@RoleMenuPermission", dataTableRmp.AsTableValuedParameter("[dbo].[RoleMenuPermissionsType]"));
+            param.Add("@sqlActionStatus", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+            await connection.ExecuteAsync("[dbo].[sp_RoleMenuPermission_GetBy_Id]", param, commandType: CommandType.StoredProcedure);
+            var sqlActionsStatus = param.Get<int>("@sqlActionStatus");
+            return sqlActionsStatus;
+
         }
 
         public async Task<IEnumerable<RoleMenuPermissions>> GetByRoleMenu(int roleId)
@@ -44,6 +69,24 @@ namespace HRMS.Data.Repository.Menu
             
             return await connection
                 .QueryAsync<RoleMenuPermissions>("[dbo].[sp_rolemenupermission_getall]",commandType: CommandType.StoredProcedure);
+        }
+        private DataTable GetDataTableRoleMenuPermissions()
+        {
+            var dataTableRmp = new DataTable();
+            dataTableRmp.Columns.Add("MenuId", typeof(int));
+            dataTableRmp.Columns.Add("ViewPer", typeof(bool));
+            dataTableRmp.Columns.Add("CreatePer", typeof(bool));
+            dataTableRmp.Columns.Add("UpdatePer", typeof(bool));
+            dataTableRmp.Columns.Add("DeletePer", typeof(bool));
+            dataTableRmp.Columns.Add("CreatedLocalDate", typeof(DateTime)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("CreatedUTCDate", typeof(DateTime)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("CreatedNepaliDate", typeof(string)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("CreatedBy", typeof(string)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("UpdatedLocalDate", typeof(DateTime)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("UpdatedUTCDate", typeof(DateTime)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("UpdatedNepaliDate", typeof(string)).AllowDBNull = true;
+            dataTableRmp.Columns.Add("UpdatedBy", typeof(string)).AllowDBNull = true;
+            return dataTableRmp;
         }
     }
 }
