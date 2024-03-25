@@ -11,5 +11,6 @@ namespace HRMS.Core.Interfaces.Menu
     {
         Task<IEnumerable<Menus>> GetListAllAsync();
         Task<int> AddAsync(MenuAddUpdate menuAddUpdate);
+
     }
 }

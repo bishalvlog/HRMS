@@ -13,5 +13,9 @@ namespace HRMS.Core.Interfaces.Menu
         Task<IEnumerable<RoleMenuPermissions>> GetByRoleMenu(int roleId);
         Task<IEnumerable<RoleMenuPermissions>> GetListAsync();
         Task<int> AddListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType);
+        Task<int> UpdateListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType);
+        Task<IEnumerable<MenuWithSubmenus>> GetListWithSubMenusAsync(string  userName);
+        Task<MenuWithSubmenus> GetMenuSingleWithSubmenusByIdAsync(int menuId, string userName);
+
     }
 }

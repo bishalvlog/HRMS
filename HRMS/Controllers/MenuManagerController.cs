@@ -49,5 +49,29 @@ namespace HRMS.Controllers
             var (statusCode, response) = await _rmsMenuPermission.GetRoleMenuPermissionsByRoleIdAsync(roleId);
             return GetResponseFromStatusCode(statusCode, response);
         }
+        [HttpPost]
+        [Route("add-Menu-to-role")]
+        [Authorize(Policy =UserPolicies.HrmsAdmin)]
+        public async Task<IActionResult> AddMenuToRoles(int roleId,[FromBody] IEnumerable<RoleMenuPermissions> permissions)
+        {
+            var (statusCode, response) = await _rmsMenuPermission.AddRoleMenuPermissionToAsync(roleId,permissions, User);
+            return GetResponseFromStatusCode(statusCode, response);
+        }
+        [HttpPut]
+        [Route("update-menu-to-role")]
+        [Authorize(Policy =UserPolicies.HrmsAdmin)]
+        public async Task<IActionResult> UpdateMenuToRoles(int roleId, [FromBody] IEnumerable<RoleMenuPermissions> permissions)
+        {
+            var (statusCode, response) = await _rmsMenuPermission.UpdateRoleMenuPermissionToAsync(roleId,permissions, User);
+            return GetResponseFromStatusCode(statusCode, response); 
+        }
+        [HttpGet]
+        [Route("Get-Sub-Menu-CurrentUser")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> GetMenusSubmenusForCurrentUser()
+        {
+            var (statusCode, response) = await _rmsMenuPermission.GetMenusSubmenuCurrentUserAsync(User);
+            return GetResponseFromStatusCode(statusCode, response); 
+        }
     }
 }

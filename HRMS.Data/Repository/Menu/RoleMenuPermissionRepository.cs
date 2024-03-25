@@ -45,11 +45,39 @@ namespace HRMS.Data.Repository.Menu
             param.Add("@RoleId", roleId);
             param.Add("@RoleMenuPermission", dataTableRmp.AsTableValuedParameter("[dbo].[RoleMenuPermissionsType]"));
             param.Add("@sqlActionStatus", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
-            await connection.ExecuteAsync("[dbo].[sp_RoleMenuPermission_GetBy_Id]", param, commandType: CommandType.StoredProcedure);
+            await connection.ExecuteAsync("[dbo].[sp_rolemenupermissions_upsert_byroleid]", param, commandType: CommandType.StoredProcedure);
             var sqlActionsStatus = param.Get<int>("@sqlActionStatus");
             return sqlActionsStatus;
 
         }
+        public async Task<int> UpdateListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType)
+        {
+            using var connection = DbConnectionManager.ConnectDb();
+            var dataTableRmp = GetDataTableRoleMenuPermissions();
+
+            foreach(var rmpType in listRoleMenuPermissionsType)
+            {
+                var row = dataTableRmp.NewRow();
+                row["MenuId"] = rmpType.MenuId;
+                row["ViewPer"] = rmpType.ViewPer;
+                row["CreatePer"] = rmpType.CreatePer;
+                row["UpdatePer"] = rmpType.UpdatePer;
+                row["DeletePer"] = rmpType.DeletePer;
+                row["UpdatedLocalDate"] = rmpType.UpdatedLocalDate;
+                row["UpdatedUTCDate"] = rmpType.UpdatedUTCDate;
+                row["UpdatedNepaliDate"] = rmpType.UpdatedNepaliDate;
+                row["UpdatedBy"] = rmpType.UpdatedBy;
+                dataTableRmp.Rows.Add(row);
+            }
+            var param = new DynamicParameters();
+            param.Add("@RoleId", roleId);
+            param.Add("@RoleMenuPermission", dataTableRmp.AsTableValuedParameter("[dbo].[RoleMenuPermissionsType]"));
+            param.Add("@sqlActionStatus", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+            await connection.ExecuteAsync("[dbo].[sp_rolemenupermissions_upsert_byroleid]", param, commandType: CommandType.StoredProcedure);
+            var sqlActionStatus = param.Get<int>("@sqlActionStatus");
+            return sqlActionStatus;
+        }
+
 
         public async Task<IEnumerable<RoleMenuPermissions>> GetByRoleMenu(int roleId)
         {
@@ -87,6 +115,72 @@ namespace HRMS.Data.Repository.Menu
             dataTableRmp.Columns.Add("UpdatedNepaliDate", typeof(string)).AllowDBNull = true;
             dataTableRmp.Columns.Add("UpdatedBy", typeof(string)).AllowDBNull = true;
             return dataTableRmp;
+        }
+
+        public async Task<IEnumerable<MenuWithSubmenus>> GetListWithSubMenusAsync(string userName)
+        {
+           using var connection = DbConnectionManager.ConnectDb();
+
+            var param = new DynamicParameters();
+            param.Add("@UserName", userName);
+
+            var listOfMenuPermission = await connection
+                .QueryAsync<RoleMenuPermissions>("[dbo].[sp_menus_rolePermission_getByUserName]",param,commandType:CommandType.StoredProcedure);
+            return GetMenuWithSubMenu(listOfMenuPermission);
+        }
+        public async Task<MenuWithSubmenus> GetMenuSingleWithSubmenusByIdAsync(int menuId, string userName)
+        {
+            using var connection = DbConnectionManager.ConnectDb();
+
+            var param = new DynamicParameters();
+
+            var listMenuRoleSubMenus = await connection
+                .QueryAsync<RoleMenuPermissions>("[dbo].[sp_menus_rolemenupermissions_get_by_menuid_username]", param, commandType: CommandType.StoredProcedure);
+            return GetMenuSingleWithSubmenus(menuId, listMenuRoleSubMenus);
+        }
+        private IEnumerable<MenuWithSubmenus> GetMenuWithSubMenu(IEnumerable<RoleMenuPermissions> menuIn)
+        {
+            var menu = menuIn.
+                Where(x => x.MenuId !=x.ParentId)
+                .Select(s => _mapper.Map<RoleMenuPermissions,MenuWithSubmenus>(s))
+                .ToList();
+
+            var menuAggregation = new List<MenuWithSubmenus>();
+            menu.ForEach(menuItem =>
+                {
+                    var menuItemSubMenu = menu.Where(x => x.ParentId == menuItem.MenuId)
+                        .OrderBy(x => x.DisplayOrder)
+                        .ThenBy(x => x.Title)
+                        .ToList();
+                    menuItem.SubMenus.AddRange(menuItemSubMenu);
+                    menuAggregation.Add(menuItem);
+            });
+                return menuAggregation
+                .Where(x => x.ParentId<1)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.Title)
+                .ToList();
+        }
+        private MenuWithSubmenus GetMenuSingleWithSubmenus(int menuId, IEnumerable<RoleMenuPermissions> menusIn)
+        {
+            var menus = menusIn
+                .Where(x => x.MenuId != x.ParentId)
+                .Select(s => _mapper.Map<RoleMenuPermissions, MenuWithSubmenus>(s))
+                .ToList();
+
+            var menusAggregated = new List<MenuWithSubmenus>();
+            menus.ForEach(menuItem =>
+            {
+                var menuItemSubmenus = menus.Where(x => x.ParentId == menuItem.MenuId)
+                    .OrderBy(x => x.DisplayOrder)
+                    .ThenBy(x => x.Title)
+                    .ToList();
+
+                menuItem.SubMenus.AddRange(menuItemSubmenus);
+                menusAggregated.Add(menuItem);
+            });
+
+            return menusAggregated.FirstOrDefault(x => x.MenuId == menuId);
         }
     }
 }

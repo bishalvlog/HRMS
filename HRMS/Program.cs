@@ -27,6 +27,7 @@ namespace HRMS
                     await DataSeeder.SeedRolesAsync(roleRepository);
                     await DataSeeder.SeedUsersAsync(userRepository, roleRepository, userRoleRepository);
                     await DataSeeder.SeedMenuAsync(menuRepository);
+                    await DataSeeder.SeedRoleMenuPermission(roleRepository, menuRepository,roleMenuPermission);
 
 
                     //var dbContent = scope.ServiceProvider.GetRequiredService<AppIdentityDbContext>();

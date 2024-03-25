@@ -206,9 +206,8 @@ namespace HRMS.Data.DataSeeder
                         CreatedBy = createdBy
 
                     });
-
                 });
-                //await _rmpRepository.
+                await _rmpRepository.AddListAsync(Admin.Id, roleMenuPermissionSeeds);
             }
             catch(Exception ex)
             {
