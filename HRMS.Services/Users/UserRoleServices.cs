@@ -1,4 +1,5 @@
 ﻿using HRMS.Core.Interfaces.Users;
+using HRMS.Core.Models.Users;
 using HRMS.Data.Dtos.Response;
 using HRMS.Services.Commond;
 using System;
@@ -27,6 +28,11 @@ namespace HRMS.Services.Users
             if(spMessage.StatusCode !=200) return GetErrorResponseFromSprocMessage(spMessage);
 
             return (HttpStatusCode.OK, new ApiResponseDto { Success = true, Message =spMessage.MsgText });
+        }
+
+        public async Task<IEnumerable<AppRole>> GetUserRolesByNames(string UserName)
+        {
+            return await _userRolesRepository.GetUserRolesByNameAsync(UserName);
         }
     }
 }

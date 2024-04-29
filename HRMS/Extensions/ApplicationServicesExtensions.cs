@@ -1,4 +1,5 @@
 ﻿using HRMS.Core.Interfaces.Users;
+using HRMS.Core.Models.Logger;
 using HRMS.Data.Comman.Constrant;
 using HRMS.Data.Dtos.Response;
 using HRMS.Data.Repository.Users;
@@ -15,9 +16,15 @@ namespace HRMS.Extensions
         {
             #region  User
             services.AddScoped<IRolesRepository, RolesRepository>();
-            services.AddScoped<IRoleServices, RolesServices>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserRolesRepository, UserRolesRepository>();
+
+
+            services.AddScoped<IRoleServices, RolesServices>();
+            services.AddScoped<IUserServices, UserServices>();
+            services.AddScoped<IUserRoleServices, UserRoleServices>();
+            services.AddScoped<IUserAccountService, UserAccountService>();
+            services.AddScoped<IUserAuthService,  UserAuthService>();
             #endregion
             #region Crypto
             services.AddScoped<ISecureApiCrytoService, SecureApiCrytoService>();

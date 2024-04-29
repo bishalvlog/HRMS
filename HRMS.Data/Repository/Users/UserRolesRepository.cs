@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using HRMS.Core.Interfaces.Users;
 using HRMS.Core.Models.SProc;
+using HRMS.Core.Models.Users;
 using HRMS.Data.Comman.Helpers;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,19 @@ namespace HRMS.Data.Repository.Users
 
            return new SpBaseMessageResponse { StatusCode = statusCode, MsgText = MsgText, MsgTypes = MsgType };
             
+        }
+
+        public async Task<IEnumerable<AppRole>> GetUserRolesByNameAsync(string userName)
+        {
+            if(string.IsNullOrWhiteSpace(userName))
+                throw new  ArgumentNullException(nameof(userName));
+
+            using var connection = DbConnectionManager.ConnectDb();
+
+            var param = new DynamicParameters();
+            param.Add("@UserName", userName);
+
+            return await connection.QueryAsync<AppRole>("[dbo].[sp_user_roles_getby_username",param, commandType: CommandType.StoredProcedure);
         }
     }
 }

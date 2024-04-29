@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HRMS.Core.Models.Menu;
 using HRMS.Core.Models.Pagging;
 using HRMS.Core.Models.Users;
 using HRMS.Data.Dtos.RolesDto;
@@ -23,6 +24,11 @@ namespace HRMS.Data.Comman.Helpers
             CreateMap<AppRole, CreateRolesDto>().ReverseMap();
             CreateMap<AppRole,UpdateRoleDto>().ReverseMap();
             #endregion
+            #region Menus 
+            CreateMap<RoleMenuPermissions, MenuWithSubmenus>().ReverseMap();
+            CreateMap<MenuModel, MenuAddUpdate>().ReverseMap();
+            CreateMap<Menus,MenuAddUpdate>().ReverseMap();
+            #endregion 
 
         }
 

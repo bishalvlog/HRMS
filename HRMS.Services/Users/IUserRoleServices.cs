@@ -1,4 +1,5 @@
-﻿using HRMS.Data.Dtos.Response;
+﻿using HRMS.Core.Models.Users;
+using HRMS.Data.Dtos.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,7 @@ namespace HRMS.Services.Users
     public interface IUserRoleServices
     {
         Task<(HttpStatusCode, ApiResponseDto)> AssignUserToRolesAsync(int userId,params int[] roleIds);
+        Task<IEnumerable<AppRole>> GetUserRolesByNames(string UserName);
+
     }
 }

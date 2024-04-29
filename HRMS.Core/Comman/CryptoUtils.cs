@@ -35,5 +35,16 @@ namespace HRMS.Core.Comman
             using var hmacSha512 = new HMACSHA256(secretBytes); 
             return hmacSha512.ComputeHash(inputBytes);
         }
+        public static bool checkEqualHashHmacSha512(string valueCheck, string hashvalue, string saltKey)
+        {
+            if(string.IsNullOrWhiteSpace(valueCheck)) throw new ArgumentNullException(nameof(valueCheck));
+            if(string.IsNullOrWhiteSpace(hashvalue)) throw new ArgumentNullException(nameof(hashvalue));
+            if(string.IsNullOrWhiteSpace(saltKey))throw new ArgumentNullException(nameof(saltKey));
+
+            using var hmacSha512 = new HMACSHA256(Encoding.UTF8.GetBytes((saltKey)));
+            var hashCurrentCompute = hmacSha512.ComputeHash(Encoding.UTF8.GetBytes(valueCheck));
+
+            return Convert.ToBase64String(hashCurrentCompute).Equals(hashvalue);    
+        }
     }
 }
