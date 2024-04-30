@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HRMS.Controllers
 {
-    [Authorize(Policy =UserPolicies.HrmsAdmin)]
+    //[Authorize(Policy =UserPolicies.HrmsAdmin)]
     public class MenuManagerController : BaseApiController
     {
         private readonly IMenusService _menuService;

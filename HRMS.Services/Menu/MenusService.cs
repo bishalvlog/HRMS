@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using HRMS.Core.Interfaces.Menu;
+﻿using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Models.Menu;
 using HRMS.Data.Comman.Helpers;
 using HRMS.Data.Dtos.Response;
@@ -16,15 +15,13 @@ namespace HRMS.Services.Menu
         private readonly IMenuRepository _MenuRespository;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _hostEnv;
-        private readonly IMapper _mapper;
         public readonly string _apiUrl;
 
-        public MenusService(IMenuRepository menuRespository, IConfiguration config, IWebHostEnvironment hostEnv, IMapper mapper, string apiUrl)
+        public MenusService(IMenuRepository menuRespository, IConfiguration config, IWebHostEnvironment hostEnv)
         {
             _MenuRespository = menuRespository;
             _config = config;
             _hostEnv = hostEnv;
-            _mapper = mapper;
             _apiUrl = _config["ApiURL"];
         }
 
