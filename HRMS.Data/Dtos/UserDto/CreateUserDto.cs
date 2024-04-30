@@ -28,6 +28,5 @@ namespace HRMS.Data.Dtos.UserDto
         [DataType(DataType.Password)]
         public string Password { get; set; }
         public bool IsActive { get; set; }
-        public bool IsMerchant { get; set; }
     }
 }

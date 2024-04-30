@@ -5,11 +5,13 @@ using HRMS.Data.Dtos.RolesDto;
 using HRMS.Data.Repository.Users;
 using HRMS.Mvc.Filters;
 using HRMS.Services.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 namespace HRMS.Areas.Admin
 {
+    [AllowAnonymous]
     public class UserRolesController : BaseApiController
     {
         private readonly IRoleServices _roleServices;
@@ -26,6 +28,7 @@ namespace HRMS.Areas.Admin
             return GetResponseFromStatusCode(status, response);
         }
         [HttpGet("GetRoleById")]
+        
         public async Task<IActionResult> GetRoleById([Required] int roleId)
         {
             var (status, response) = await _roleServices.GetRolesByIdAsync(roleId);

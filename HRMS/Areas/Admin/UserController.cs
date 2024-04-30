@@ -15,12 +15,11 @@ namespace HRMS.Areas.Admin
     public class UserController : BaseApiController
     {
         private readonly IUserServices _userServices;
-        private readonly IUserRoleServices _userRoleServices;
 
-        public UserController(IUserServices userServices, IUserRoleServices userRoleServices)
+        public UserController(IUserServices userServices)
         {
             _userServices = userServices;
-            _userRoleServices = userRoleServices;
+           
         }
         [HttpPost, Route("Create-User")]
         [LogUserActivity(UserActionTypes.ActionCreatedUser)]
