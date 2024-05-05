@@ -25,6 +25,16 @@ namespace HRMS.Data.Data
         public virtual DbSet<AspNetUserLogin> AspNetUsersLogin { get; set; }
         public virtual DbSet<AspNetUserRole> AspNetUserRoleClaims { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokenClaims { get; set; }
+        public virtual DbSet<TblUserLogingDetail> TblUserLogingDetails { get; set; }
+
+
+
+
+
+
+
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

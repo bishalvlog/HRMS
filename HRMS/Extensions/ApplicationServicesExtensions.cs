@@ -1,16 +1,15 @@
 ﻿using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Interfaces.Users;
-using HRMS.Core.Models.Logger;
 using HRMS.Data.Comman.Constrant;
 using HRMS.Data.Dtos.Response;
 using HRMS.Data.Repository.Menu;
 using HRMS.Data.Repository.Users;
+using HRMS.Services.Auth;
+using HRMS.Services.Logger;
 using HRMS.Services.Menu;
 using HRMS.Services.SecureApi;
 using HRMS.Services.Users;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebSockets;
 
 namespace HRMS.Extensions
 {
@@ -29,6 +28,12 @@ namespace HRMS.Extensions
             services.AddScoped<IUserRoleServices, UserRoleServices>();
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IUserAuthService,  UserAuthService>();
+            #endregion
+
+            #region AuthServices
+
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IExceptionLogService, ExceptionLogService>();
             #endregion
             #region Menus
             services.AddScoped<IRoleMenuPermissionRepository, RoleMenuPermissionRepository>();

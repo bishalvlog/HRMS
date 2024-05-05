@@ -57,7 +57,7 @@ namespace HRMS.Extensions
                     .Build();
 
                 // Add application auth policies defined in Features/Auth/Policies directory
-                //options.AddPolicy();
+               options.AddApplicationPolicies();
 
 
             });

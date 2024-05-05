@@ -1,23 +1,19 @@
-﻿using Azure.Identity;
-using HRMS.Core.Interfaces.Menu;
+﻿using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Models.Identity;
-using HRMS.Core.Models.Menu;
 using HRMS.Data.Comman.Constrant;
+using HRMS.Data.Comman.Helpers;
 using HRMS.Data.Data;
+using HRMS.Data.Data.Entities;
 using HRMS.Data.Dtos.Identity;
 using HRMS.Data.Dtos.Response;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace HRMS.Services.Auth
 {
@@ -95,19 +91,137 @@ namespace HRMS.Services.Auth
             return (HttpStatusCode.Unauthorized, new ApiResponseDto { Success = false, Message = AppString.Unauthorized, Errors = new List<string> { "Unauthorizes" } });
            
         }
-        private JwtSecurityToken CreateToken (List<Claim> authClaim)
+       
+        public async Task<(HttpStatusCode, ApiResponseDto)> UserLogin(UserLoginDto userLoginDto, HttpRequest httpRequest, HttpContext httpContent)
+        {
+            var user = new AppDbUser();
+
+            var userName = userLoginDto.UserName;
+
+            if(userName.IndexOf('@')> -1)
+            {
+                user =  await _userManager.FindByNameAsync(userLoginDto.UserName);
+                if (user == null)
+                    return (HttpStatusCode.Unauthorized, new ApiResponseDto { Success = false, Message = AppString.Unauthorized, Errors = new List<string> { "UnAthorize" } });
+                else
+                    userName = user.Email;
+            }
+            else
+            {
+                user = await _userManager.FindByEmailAsync(userLoginDto
+                    .UserName);
+                if (user == null)
+                    return (HttpStatusCode.Unauthorized, new ApiResponseDto { Success = false, Message = AppString.Unauthorized, Errors = new List<string> { "UnAthorize" } });
+                else
+                    userName = user.UserName;
+            }
+
+            if(user != null && user.IsActive == true)
+            {
+                if ((user.IsCustomer == null ? false : user.IsCustomer) == false || user.EmailConfirmed == false)
+                    return (HttpStatusCode.Unauthorized, new ApiResponseDto { Success = false, Message = AppString.Unauthorized, Errors = new List<string> { "UnAthorixed" } });
+
+                if(await _userManager.CheckPasswordAsync(user, userLoginDto.Password))
+                {
+                    var userRole = await _userManager.GetRolesAsync(user);
+
+                    var menus = await _roleMenuPermissionRepository.GetListWithSubMenusAsync(userLoginDto.UserName);
+
+                    var AuthClaim = new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.NameIdentifier,user.Id),
+                        new Claim(ClaimTypes.Name , user.UserName),
+                        new Claim(ClaimTypes.Email, user.Email ?? ""),
+                        new Claim(ClaimTypes.MobilePhone, user.MobileNumber ?? ""),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
+                    };
+                    if(userRole != null)
+                    {
+                        if(userRole.Count >1)
+                        {
+                            foreach (var role in userRole)
+                            {
+                                AuthClaim.Add(new Claim(ClaimTypes.Role, role));    
+                            }
+                        }
+                    }
+                    string host = Dns.GetHostName();
+                    _RemoteServerIP = Dns.GetHostEntry(host).AddressList[1].ToString();
+                    _ClientDeviceIP = GetIpAddress(httpRequest, httpContent);
+                    var loginIpDetails =new  TblUserLogingDetail();
+                    if(_db.TblUserLogingDetails.Any(u => u.UserName.ToLower()== userLoginDto.UserName && u.ClientId == _configure["Hrms_ClientId"])) 
+                    {
+                        loginIpDetails = _db.TblUserLogingDetails.FirstOrDefault(u => u.UserName.ToLower()== userLoginDto.UserName && u.ClientId == _configure["Hrms_ClientId"]);
+                        if(loginIpDetails != null)
+                        {
+                            loginIpDetails.ClientDeviceIp = _ClientDeviceIP;
+                            loginIpDetails.RemoteServerIp = _RemoteServerIP;
+                            loginIpDetails.LastLoginLocalTime = DateTime.Now;
+                            loginIpDetails.LastLoginUtcTime = DateTime.UtcNow;
+                            loginIpDetails.LastLoginNepaliDate = DateConversions.ConvertToNepaliDate(DateTime.Now);
+                            await _db.SaveChangesAsync();
+                                
+                        }
+                    }
+                    else
+                    {
+                        loginIpDetails.UserName = userLoginDto.UserName;
+                        loginIpDetails.ClientId = _configure["Hrms_ClientId"];
+                        loginIpDetails.RemoteServerIp = _RemoteServerIP;
+                        loginIpDetails.ClientDeviceIp = _ClientDeviceIP;
+                        loginIpDetails.LastLoginLocalTime = DateTime.Now;
+                        loginIpDetails.LastLoginUtcTime = DateTime.UtcNow;
+                        loginIpDetails.LastLoginNepaliDate = DateConversions.ConvertToNepaliDate(DateTime.Now);
+                        await _db.TblUserLogingDetails.AddAsync(loginIpDetails);
+                        await _db.SaveChangesAsync();
+
+                    }
+                    var token = CreateToken(AuthClaim);
+                    return (HttpStatusCode.OK, new ApiResponseDto
+                    {
+                        Success = true,
+                        Data = new
+                        {
+                            token = new JwtSecurityTokenHandler().WriteToken(token),
+                            expiration = token.ValidTo,
+                            username = userLoginDto.UserName,
+                            id = user.Id
+
+                        }
+                    });
+
+
+                }
+
+            }
+            return (HttpStatusCode.Unauthorized, new ApiResponseDto { Success = false, Message = AppString.Unauthorized, Errors = new List<string> { "Unathorized !" } });
+        }
+        private JwtSecurityToken CreateToken(List<Claim> authClaim)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configure["JWT:Secret"]));
 
             var token = new JwtSecurityToken(
                 issuer: _configure["JWT:ValidIssues"],
                 audience: _configure["JWT:ValidAudience"],
-                expires : DateTime.Now.AddDays(1),
-                claims :  authClaim,
-                signingCredentials : new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                expires: DateTime.Now.AddDays(1),
+                claims: authClaim,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
 
             return token;
         }
+
+        private string GetIpAddress(HttpRequest httpRequest, HttpContext httpContent)
+        {
+            if (httpRequest.Headers.ContainsKey("X-Forwarded-For"))
+            return httpRequest.Headers["X-Forwarded-For"];
+
+            else
+            {
+               return httpContent.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            }
+        }
+
     }
 }
