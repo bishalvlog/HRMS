@@ -152,7 +152,7 @@ namespace HRMS.Data.DataSeeder
                     },
                     new MenuAddUpdate
                     {
-                         Title = "User Manager",
+                        Title = "User Manager",
                         ParentId = 0,
                         MenuUrl = "/user-manager",
                         DisplayOrder = 4,
