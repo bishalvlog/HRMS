@@ -26,7 +26,7 @@ namespace HRMS.Core.Models.Menu
     public class MenuAddUpdate
     {
         private string _menuUrl = string.Empty;
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Required(AllowEmptyStrings = false)]
         [MaxLength(450)]
         public string Title { get; set; }

@@ -138,11 +138,12 @@ namespace HRMS.Data.DataSeeder
         {
             try
             {
+                Guid guid = Guid.NewGuid();
                 var menuExists = await menuRepository.GetListAllAsync();
                 var menu = new List<MenuAddUpdate>
                 {
                     new MenuAddUpdate
-                    {
+                    {   Id = guid.GetHashCode(),
                         Title = "Menu Manager",
                         ParentId = 0,
                         MenuUrl = "/menu-manager",
@@ -152,6 +153,7 @@ namespace HRMS.Data.DataSeeder
                     },
                     new MenuAddUpdate
                     {
+                         Id = guid.GetHashCode(),
                         Title = "User Manager",
                         ParentId = 0,
                         MenuUrl = "/user-manager",

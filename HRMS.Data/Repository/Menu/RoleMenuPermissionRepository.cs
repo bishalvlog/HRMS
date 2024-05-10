@@ -23,31 +23,39 @@ namespace HRMS.Data.Repository.Menu
 
         public async Task<int> AddListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType)
         {
-            using var connection = DbConnectionManager.ConnectDb();
+             try
+             {
+                    using var connection = DbConnectionManager.ConnectDb();
 
-            var dataTableRmp = GetDataTableRoleMenuPermissions();
+                    var dataTableRmp = GetDataTableRoleMenuPermissions();
 
-            foreach(var rmpType in listRoleMenuPermissionsType)
-            {
-                var row = dataTableRmp.NewRow();
-                row["MenuId"] = rmpType.MenuId;
-                row["ViewPer"] = rmpType.ViewPer;
-                row["CreatePer"] = rmpType.CreatePer;
-                row["UpdatePer"] = rmpType.UpdatePer;
-                row["DeletePer"] = rmpType.DeletePer;
-                row["UpdatedLocalDate"] = rmpType.UpdatedLocalDate!;
-                row["UpdatedUTCDate"] = rmpType.UpdatedUTCDate!;
-                row["UpdatedNepaliDate"] = rmpType.UpdatedNepaliDate;
-                row["UpdatedBy"] = rmpType.UpdatedBy;
-                dataTableRmp.Rows.Add(row);
-            }
-            var param = new DynamicParameters();
-            param.Add("@RoleId", roleId);
-            param.Add("@RoleMenuPermission", dataTableRmp.AsTableValuedParameter("[dbo].[RoleMenuPermissionsType]"));
-            param.Add("@sqlActionStatus", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
-            await connection.ExecuteAsync("[dbo].[sp_rolemenupermissions_upsert_byroleid]", param, commandType: CommandType.StoredProcedure);
-            var sqlActionsStatus = param.Get<int>("@sqlActionStatus");
-            return sqlActionsStatus;
+                    foreach (var rmpType in listRoleMenuPermissionsType)
+                    {
+                        var row = dataTableRmp.NewRow();
+                        row["MenuId"] = rmpType.MenuId;
+                        row["ViewPer"] = rmpType.ViewPer;
+                        row["CreatePer"] = rmpType.CreatePer;
+                        row["UpdatePer"] = rmpType.UpdatePer;
+                        row["DeletePer"] = rmpType.DeletePer;
+                    row["UpdatedLocalDate"] = DBNull.Value;
+                       row["UpdatedUTCDate"] = DBNull.Value;
+                        row["UpdatedNepaliDate"] = rmpType?.UpdatedNepaliDate;
+                        row["UpdatedBy"] = rmpType.UpdatedBy;
+                        dataTableRmp.Rows.Add(row);
+                    }
+                    var param = new DynamicParameters();
+                    param.Add("@RoleId", roleId);
+                    param.Add("@RoleMenuPermissions", dataTableRmp.AsTableValuedParameter("[dbo].[RoleMenuPermissionsType]"));
+                    param.Add("@sqlActionStatus", dbType: DbType.Int32, direction: ParameterDirection.ReturnValue);
+                    await connection.ExecuteAsync("[dbo].[sp_rolemenupermissions_upsert_byroleid]", param, commandType: CommandType.StoredProcedure);
+                    var sqlActionsStatus = param.Get<int>("@sqlActionStatus");
+                    return sqlActionsStatus;
+             }
+             catch (Exception ex)
+             {
+                    throw ex;
+             }
+            
 
         }
         public async Task<int> UpdateListAsync(int roleId, IEnumerable<RoleMenuPermissionTypes> listRoleMenuPermissionsType)
