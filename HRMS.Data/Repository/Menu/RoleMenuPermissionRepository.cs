@@ -37,8 +37,8 @@ namespace HRMS.Data.Repository.Menu
                         row["CreatePer"] = rmpType.CreatePer;
                         row["UpdatePer"] = rmpType.UpdatePer;
                         row["DeletePer"] = rmpType.DeletePer;
-                    row["UpdatedLocalDate"] = DBNull.Value;
-                       row["UpdatedUTCDate"] = DBNull.Value;
+                        row["UpdatedLocalDate"] = DBNull.Value;
+                        row["UpdatedUTCDate"] = DBNull.Value;
                         row["UpdatedNepaliDate"] = rmpType?.UpdatedNepaliDate;
                         row["UpdatedBy"] = rmpType.UpdatedBy;
                         dataTableRmp.Rows.Add(row);

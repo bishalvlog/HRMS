@@ -17,7 +17,7 @@ namespace HRMS.Middleware
             _requestDelegate = requestDelegate; 
             _env = env;
         }
-        public async Task Invoke(HttpContext content, IExceptionLogService exceptionLogService)
+        public async Task InvokeAsync(HttpContext content, IExceptionLogService exceptionLogService)
         {
             try
             {

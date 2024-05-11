@@ -2,9 +2,11 @@
 using HRMS.Core.Interfaces.Users;
 using HRMS.Data.Comman.Constrant;
 using HRMS.Data.Dtos.Response;
+using HRMS.Data.Repository.ClientMenu;
 using HRMS.Data.Repository.Menu;
 using HRMS.Data.Repository.Users;
 using HRMS.Services.Auth;
+using HRMS.Services.ClientMenu;
 using HRMS.Services.Logger;
 using HRMS.Services.Menu;
 using HRMS.Services.SecureApi;
@@ -34,6 +36,8 @@ namespace HRMS.Extensions
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IExceptionLogService, ExceptionLogService>();
+            services.AddScoped<IClientMenuService, ClientMenuService>();
+            services.AddScoped<IClientMenuRepository, ClientMenuRepository>();
             #endregion
             #region Menus
             services.AddScoped<IRoleMenuPermissionRepository, RoleMenuPermissionRepository>();
