@@ -1,0 +1,397 @@
+﻿@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor accessor
+
+@{
+
+    var username = accessor.HttpContext.User.Identity.IsAuthenticated
+        ? accessor.HttpContext.User.FindFirst(claim => claim.Type.Equals("username", StringComparison.InvariantCultureIgnoreCase))?.Value ?? "User"
+        : "User";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Added by HTTrack -->
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+    <title>Digi Gold</title>
+    <!-- HTML5 Shim and Respond.js IE11 support of HTML5 elements and media queries -->
+    <!--[if lt IE 11]>
+
+        <![endif]-->
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="">
+    <meta name="author" content="Codedthemes" />
+
+    <style>
+        .loading-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 10;
+        }
+
+        .loader {
+            background-color: transparent;
+            display: none;
+            width: 200px;
+            height: 200px;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            text-align: center;
+            margin-left: -50px;
+            margin-top: -100px;
+            z-index: 2;
+            overflow: auto;
+        }
+    </style>
+    <!--Select2-->
+
+    <script src="~/js/admin.pagination.js" asp-append-version="true"></script>
+    <script src="~/js/admin.users.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="https://cdn.tutorialjinni.com/intl-tel-input/17.0.19/css/intlTelInput.css" />
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="" type="image/x-icon">
+    <!-- fontawesome icon -->
+    <link rel="stylesheet" href="~/assets/fontawesome-free-6.3.0-web/css/all.css">
+    @*    <link rel="stylesheet" href="~/assets/fonts/feather/css/feather.css">
+    *@
+    <link rel="stylesheet" href="~/assets/fonts/aaa/feather/css/feather.css">
+    <!-- animation css -->
+    <link rel="stylesheet" href="~/assets/plugins/animation/css/animate.min.css">
+    <!-- notification css -->
+    <link rel="stylesheet" href="~/assets/plugins/notification/css/notification.min.css">
+    <link rel="stylesheet" href="~/assets/plugins/data-tables/css/datatables.min.css">
+    <!-- select2 css -->
+    <link rel="stylesheet" href="~/assets/plugins/select2/css/select2.min.css">
+    @* <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">*@
+    <link rel="stylesheet" href="~/assets/css/flag-icons.min.css" />
+    <!-- multi-select css -->
+    <link rel="stylesheet" href="~/assets/plugins/multi-select/css/multi-select.css">
+    <!-- pnotify css -->
+    @*<link rel="stylesheet" href="~/assets/plugins/pnotify/css/pnotify.custom.min.css">*@
+    <link href="~/assets/pnotify/css/pnotify.custom.min.css" rel="stylesheet" />
+    <!-- pnotify-custom css -->
+    <link rel="stylesheet" href="~/assets/css/pages/pnotify.css">
+
+    <!-- vendor css -->
+    <link rel="stylesheet" asp-append-version="true" href="~/assets/css/custom.css">
+    <!-- Material Datetimepicker -->
+    <!-- material datetimepicker css -->
+    <link rel="stylesheet" href="~/assets/plugins/material-datetimepicker/css/bootstrap-material-datetimepicker.css">
+    <!-- Bootstrap datetimepicker css -->
+    <link rel="stylesheet" href="~/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datepicker3.min.css">
+    <link href="~/css/site.css" asp-append-version="true" rel="stylesheet" />
+    <link href="~/assets/css/style.css" asp-append-version="true" rel="stylesheet" />
+    <link href="~/select2/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body style="overflow-x: hidden;">
+    <!-- Loader Animation Start -->
+    <div class="ajax-loading-busy lds-dual-ring display-none loader-animation-overlay"></div>
+    <!-- Loader Animation End -->
+    @* Side Navigation *@
+    @await Component.InvokeAsync("SideNavigation")
+
+    <!-- [ Header ] start -->
+    <header class="navbar pcoded-header navbar-expand-lg navbar-light">
+        <div class="m-header">
+            <a class="mobile-menu" id="mobile-collapse1" href="#!"><span></span></a>
+            <a href="index-2.html" class="b-brand">
+                <div class="b-bg">
+                    <img src="~/assets/images/logo-dark.png">
+                </div>
+                <span class="b-title headings">MyPayGold</span>
+            </a>
+        </div>
+        <a class="mobile-menu" id="mobile-header" href="#!">
+            <i class="feather icon-more-horizontal"></i>
+        </a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                <li><a href="#!" class="full-screen" onclick="javascript:toggleFullScreen()"><i class="fa-solid fa-expand"></i></a></li>
+                <li class="nav-item dropdown">
+                    <a class="dropdown-toggle" href="#" data-toggle="dropdown">Dropdown</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#!">Action</a></li>
+                        <li><a class="dropdown-item" href="#!">Another action</a></li>
+                        <li><a class="dropdown-item" href="#!">Something else here</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <div class="main-search">
+                        <div class="input-group">
+                            <input type="text" id="m-search" class="form-control" placeholder="Search . . .">
+                            <a href="#!" class="input-group-append search-close">
+                                <span class="input-group-text"><i class="fa-solid fa-xmark"></i></span>
+                            </a>
+                            <span class="input-group-append search-btn btn btn-primary input-group-text">
+                                <i class="fa-solid fa-magnifying-glass "></i>
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li>
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-toggle="dropdown"><i class="fa-solid fa-bell"></i></a>
+                        <div class="dropdown-menu dropdown-menu-right notification">
+                            <div class="noti-head">
+                                <h6 class="d-inline-block m-b-0">Notifications</h6>
+                                <div class="float-right">
+                                    <a href="#!" class="m-r-10">mark as read</a>
+                                    <a href="#!">clear all</a>
+                                </div>
+                            </div>
+                            <ul class="noti-body">
+                                <li class="n-title">
+                                    <p class="m-b-0">NEW</p>
+                                </li>
+                                <li class="notification">
+                                    <div class="media">
+                                        <img class="img-radius" src="~/assets/images/user/avatar-1.jpg" alt="Generic placeholder image">
+                                        <div class="media-body">
+                                            <p><strong>@username</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
+                                            <p>New ticket Added</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="n-title">
+                                    <p class="m-b-0">EARLIER</p>
+                                </li>
+                                <li class="notification">
+                                    <div class="media">
+                                        <img class="img-radius" src="~/assets/images/user/avatar-2.jpg" alt="Generic placeholder image">
+                                        <div class="media-body">
+                                            <p><strong>Joseph William</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
+                                            <p>Prchace New Theme and make payment</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="notification">
+                                    <div class="media">
+                                        <img class="img-radius" src="~/assets/images/user/avatar-3.jpg" alt="Generic placeholder image">
+                                        <div class="media-body">
+                                            <p><strong>Sara Soudein</strong><span class="n-time text-muted"><i class="icon feather icon-clock m-r-10"></i>30 min</span></p>
+                                            <p>currently login</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="noti-footer">
+                                <a href="#!">show all</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="dropdown drp-user">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa-solid fa-gear"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right profile-notification">
+                            <div class="pro-head">
+                                <img src="~/assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image">
+                                <span>@username</span>
+                                <a asp-action="Logout" asp-controller="Account" class="dud-logout" title="Logout">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                </a>
+                            </div>
+                            <ul class="pro-body">
+                                <li>
+                                    <a href="#!" class="dropdown-item">
+                                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                                        Settings
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#!" class="dropdown-item" onclick="ShowPopUp('@Url.Action("DetailsByUsername","Users",new{name=username})','User Details','modal-dialog modal-md')"><i class="fa-solid fa-user"></i>Profile</a>
+                                </li>
+                                <li>
+                                    <a style="cursor:pointer" class="dropdown-item" onclick="ShowPopUp('@Url.Action("ChangePassword","Users")','ChangePassword','modal-dialog modal-md')">
+
+                                        <i class="fa-solid fa-user-pen"></i> change Password
+                                    </a>
+                                </li>
+                                <li>
+                                    <a style="cursor:pointer" class="dropdown-item" onclick="ShowPopUp('@Url.Action("ResetAccessCode","Users")','Reset Access Code','modal-dialog modal-md')">
+
+                                        <i class="fa-solid fa-refresh"></i> Reset Access Code
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="auth-signin.html" class="dropdown-item">
+                                        <i class="fa-sharp fa-solid fa-lock"></i>
+                                        Lock Screen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-action="Logout" asp-controller="Account" class="dropdown-item">
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                        LogOut
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <!-- [ Header ] end -->
+
+    <section class="header-user-list">
+
+        <div class="h-list-body">
+            <div class="main-friend-cont scroll-div">
+            </div>
+        </div>
+    </section>
+
+    <section class="header-chat">
+
+        <div class="h-list-body">
+            <div class="main-chat-cont scroll-div">
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- [ Main Content ] start -->
+    <div class="pcoded-main-container">
+        <!-- [ breadcrumb ] end -->
+        <div class="main-body">
+            <div class="page-wrapper">
+                <!-- [ Main Content ] start -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="replace">
+                            @RenderBody()
+
+                        </div>
+
+                    </div>
+
+                </div>
+                <!-- [ Main Content ] end -->
+            </div>
+        </div>
+    </div>
+
+    <!-- [ Main Content ] end -->
+    <!-- [ Model ] -->
+    <div id="add-new" class="modal fade bd-example-modal-lg" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myLargeModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body test-class">
+
+
+                    <!-- [ Model Body ] -->
+                </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="loader">
+        <center>
+            <span class="fa fa-spinner fa-spin fa-3x"></span>
+        </center>
+    </div>
+
+
+    <!-- [ Model ] end-->
+    <!-- Required Js -->
+    <script src="~/assets/plugins/jquery/js/jquery.min.js"></script>
+
+    <script src="~/assets/js/vendor-all.min.js"></script>
+    <script src="~/assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/assets/js/menu-setting.min.js"></script>
+    <script src="~/assets/js/pcoded.min.js"></script>
+    <script src="~/js/notify.min.js"></script>
+
+
+
+
+
+
+
+
+    <!-- notification Js -->
+    <script src="~/assets/plugins/notification/js/bootstrap-growl.min.js"></script>
+    <!-- datatable Js -->
+    <script src="~/assets/plugins/data-tables/js/datatables.min.js"></script>
+    <script src="~/assets/js/pages/tbl-datatable-custom.js"></script>
+
+    <!--pulgin js-->
+    <script src="~/assets/plugins/select2/js/select2.full.min.js"></script>
+
+    <!-- multi-select Js -->
+    <script src="~/assets/plugins/multi-select/js/jquery.quicksearch.js"></script>
+    <script src="~/assets/plugins/multi-select/js/jquery.multi-select.js"></script>
+    <!-- form-select-custom Js -->
+    <script src="~/assets/js/pages/form-select-custom.js"></script>
+    <script src="~/assets/js/pages/form-picker-custom.js"></script>
+    <!-- pnotify Js -->
+    <script src="~/assets/pnotify/js/pnotify.custom.min.js"></script>
+    <script src="~/assets/pnotify/js/notify-event.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/nepali-date-converter@2.0.0/dist/nepali-date-converter.min.js"></script>
+    <!--jquery validation-->
+    @*   <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    *@
+    <!-- dashboard-custom js -->
+    @* <script src="~/assets/js/pages/dashboard-ecommerce.js"></script>*@
+    <!-- Alerts and notifications -->
+    @* TODO: Replace below with local *@
+    @*<script src="~/assets/notify-0.4.2/notify.js"></script>*@
+    <script src="~/assets/sweetalert/sweetalert2@9.min.js"></script>
+    <script src="~/assets/toastr.js/js/toastr.min.js"></script>
+    <script src="~/assets/feather-icons@4.29.0/dist/feather.min.js"></script>
+    @* <script src="~/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datepicker.min.js"></script>*@
+    <script src="https://cdn.tutorialjinni.com/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!----select2---->
+    <script src="~/select2/js/select2.full.min.js"></script>
+    <script src="~/select2/js/select2.min.js"></script>
+
+
+
+
+
+
+    <script src="~/assets/js/pages/nepali.datepicker.v4.0.1.min.js"></script>
+
+
+
+
+
+
+
+
+    <script src="~/assets/momentjs.com/downloads/moment-with-locales.min.js"></script>
+
+
+   
+
+</body>
+
+
+
+</html>

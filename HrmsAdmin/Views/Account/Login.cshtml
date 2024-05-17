@@ -1,0 +1,95 @@
+﻿@using HrmsSystemAdmin.Web.Dto.Users.Auth
+@model UserLoginRequest
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en" class="light">
+<!-- BEGIN: Head -->
+
+<head>
+    <meta charset="utf-8">
+    <link href="dist/images/logo.svg" rel="shortcut icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <title>Login</title>
+    <!-- BEGIN: CSS Assets-->
+    <link rel="stylesheet" href="~/dist/css/app.css" asp-append-version="true" />
+    <!-- END: CSS Assets-->
+</head>
+<!-- END: Head -->
+<body class="login">
+    <div class="container px-sm-10">
+        <div class="grid columns-2 gap-4">
+            <!-- BEGIN: Login Info -->
+            <div class="g-col-2 g-col-xl-1 d-none d-xl-flex flex-column min-vh-screen">
+                <a href="#" class="-intro-x d-flex align-items-center pt-5">
+                    <img alt="" class="w-6" src="~/dist/images/logo.png">
+                    <span class="text-white fs-lg ms-3"> Hotel<span class="fw-medium">Reservation</span> </span>
+                </a>
+                <div class="my-auto">
+                    <img alt="" class="-intro-x w-1/2 mt-n16" src="~/dist/images/logo.png">
+                    <div class="-intro-x text-white fw-medium fs-4xl lh-base mt-10">
+                        A few more clicks to
+                        <br>
+                        sign in to your account.
+                    </div>
+                </div>
+            </div>
+            <!-- END: Login Info -->
+            <!-- BEGIN: Login Form -->
+            <div class="g-col-2 g-col-xl-1 h-screen h-xl-auto d-flex py-5 py-xl-0 my-10 my-xl-0">
+                <div class="my-auto mx-auto ms-xl-20 bg-white dark-bg-dark-1 bg-xl-transparent px-5 px-sm-8 py-8 p-xl-0 rounded-2 shadow-md shadow-xl-none w-full w-sm-3/4 w-lg-2/4 w-xl-auto">
+                    <h2 class="intro-x fw-bold fs-2xl fs-xl-3xl text-center text-xl-start">
+                        Sign In
+                    </h2>
+                    <form class="pt-3" method="post" autocomplete="off">
+                        @*  @await Html.PartialAsync("_LoginMessage")*@
+                        <div style="text-align:center;">
+                            <span style="color:red;">@TempData["invalid"]</span>
+                        </div>
+
+                        <div class="intro-x mt-8">
+                            <input type="text" id="userNameOrEmail" name="userNameOrEmail" class="intro-x login__input form-control py-3 px-4 border-gray-300 d-block" placeholder="Email">
+                            <span class="text-danger">@Html.ValidationMessageFor(a => a.UserNameOrEmail)</span>
+                            <input type="password" id="password" name="password" class="intro-x login__input form-control py-3 px-4 border-gray-300 d-block mt-4" placeholder="Password">
+                            <span class="text-danger">@Html.ValidationMessageFor(a => a.Password)</span>
+                        </div>
+                        <div class="intro-x d-flex text-gray-700 dark-text-gray-600 fs-xs fs-sm-sm mt-4">
+                            <div class="d-flex align-items-center me-auto">
+
+                                <label class="cursor-pointer select-none" for="remember-me">
+                                    <input asp-for="rememberme" name="rememberme" type="checkbox" class="form-check-input border me-2">
+                                    Remember me
+                                </label>
+
+                            </div>
+                            <a href="#">Forgot Password?</a>
+                        </div>
+
+                        <div class="mt-5 mt-xl-8 text-center text-xl-start">
+
+                            <button type="submit" class="btn btn-sm btn-primary py-3 px-4 w-full w-xl-32 me-xl-3 align-top">Login</button>
+                            <a href="register" class="btn btn-sm btn-outline-secondary py-3 px-4 w-full w-xl-32 mt-3 mt-xl-0 align-top">Sign up</a>
+                        </div>
+                    </form>
+
+                    <div class="intro-x mt-10 mt-xl-24 text-gray-700 dark-text-gray-600 text-center text-xl-start">
+                        By signin up, you agree to our
+                        <br>
+                        <a class="text-theme-1 dark-text-theme-10" href="#">Terms and Conditions</a> & <a class="text-theme-1 dark-text-theme-10" href="#">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+            <!-- END: Login Form -->
+        </div>
+    </div>
+
+
+</body>
+</html>
