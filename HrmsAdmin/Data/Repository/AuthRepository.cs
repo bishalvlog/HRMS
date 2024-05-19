@@ -14,7 +14,8 @@ namespace HrmsSystemAdmin.Web.Data.Repository
         public async Task<AuthTokenResponse> Login(UserLoginRequest userlogin)
         {
             var bodyContent = GetJsonStringContent(userlogin);
-            var (statusCode, tokenData) = await _hrmsClient.PostAsync<AuthTokenResponse>(HrmsApiUrl.UserAuthRequestUri,bodyContent);
+            var (statusCode, tokenData) = await _hrmsClient
+                .PostAsync<AuthTokenResponse>(HrmsApiUrl.UserAuthRequestUri,bodyContent);
             return tokenData;
         }
     }
