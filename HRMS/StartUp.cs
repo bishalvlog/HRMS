@@ -4,6 +4,7 @@ using HRMS.Data.Data;
 using HRMS.Data.Identity;
 using HRMS.Extensions;
 using HRMS.Middleware;
+using HRMS.Services.UriService;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -26,9 +27,8 @@ namespace HRMS
                     fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly());
                     fv.RegisterValidatorsFromAssemblyContaining<StartUp>();
                 });
-            services.AddMvc().
-                AddSessionStateTempDataProvider();
-            services.AddSession();
+            services.AddRazorPages();
+            services.AddOptions();
      
             services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(_config.GetConnectionString("HRMS")));
             services.AddDbContext<HrmsContext>(options => options.UseSqlServer(_config.GetConnectionString("HRMS")));
@@ -42,6 +42,37 @@ namespace HRMS
             services.AddSession(option =>
             option.IdleTimeout = TimeSpan.FromMinutes(60));
             services.AddHttpContextAccessor();
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy(name: "CorsPolicy", policy =>
+                {
+                    if (_config["AllowedOrigins"].Trim() != "*")
+                    {
+                        var origins = _config["AllowedOrigins"].Split(";");
+                        policy.WithOrigins(origins)
+                                            //.SetIsOriginAllowed(origin => true)
+                                            //.AllowCredentials()
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                    }
+                    else
+                    {
+                        policy
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    }
+
+                });
+            });
+            services.AddSingleton<IUriService>(o =>
+            {
+                var accessor = o.GetRequiredService<IHttpContextAccessor>();
+                var request = accessor.HttpContext.Request;
+                var uri = string.Concat(request.Scheme, "://", request.Host.ToUriComponent());
+                return new UriService(uri);
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Hrms.API", Version = "v1" });
@@ -66,7 +97,7 @@ namespace HRMS
                 app.UseHttpsRedirection();
 
                 app.UseRouting();
-                app.UseCors();
+                app.UseCors("CorsPolicy");
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.UseStaticFiles();

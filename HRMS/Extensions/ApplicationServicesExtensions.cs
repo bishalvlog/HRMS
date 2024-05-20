@@ -1,4 +1,6 @@
-﻿using HRMS.Core.Interfaces.Menu;
+﻿using DigitalGold.Core.Configuration;
+using DigitalGold.Services.Tokens.RefreshTokens;
+using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Interfaces.Users;
 using HRMS.Data.Comman.Constrant;
 using HRMS.Data.Dtos.Response;
@@ -10,7 +12,9 @@ using HRMS.Services.ClientMenu;
 using HRMS.Services.Logger;
 using HRMS.Services.Menu;
 using HRMS.Services.SecureApi;
+using HRMS.Services.Token.jwt;
 using HRMS.Services.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HRMS.Extensions
@@ -54,31 +58,47 @@ namespace HRMS.Extensions
         }
         public static IServiceCollection ConfigureApplicationServices(this IServiceCollection services, IConfiguration cong)
         {
-            services.Configure<RouteOptions>(option => option.LowercaseUrls = true);
+            services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
+            // ApiBehavior configuration for invalid API model state
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
                 {
-                    var error = actionContext.ModelState
-                    .Where(e => e.Value.Errors.Count > 0)
-                    .SelectMany(x => x.Value.Errors)
-                    .Select(x => x.ErrorMessage)
-                    .ToList();
+                    var errors = actionContext.ModelState
+                        .Where(e => e.Value.Errors.Count > 0)
+                        .SelectMany(x => x.Value.Errors)
+                        .Select(x => x.ErrorMessage)
+                        .ToList();
 
                     var errorResponse = new ApiResponseDto
                     {
                         Success = false,
                         Message = AppString.BadRequest,
-                        Errors = error
-
+                        Errors = errors
                     };
-                    return new BadRequestObjectResult(errorResponse);
 
+                    return new BadRequestObjectResult(errorResponse);
                 };
             });
-            return services;
 
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                ////reset token valid for 2 hours
+                options.TokenLifespan = TimeSpan.FromHours(2);
+            });
+
+            // Options pattern for Jwt configurations
+
+            services.Configure<UserJwtOptions>(cong.GetSection(UserJwtOptions.JwtOptions));
+            services.Configure<CustomerJwtOptions>(cong.GetSection(CustomerJwtOptions.JwtOption));
+            services.Configure<CustomerRefreshTokenOptions>(cong.GetSection(CustomerRefreshTokenOptions.SectionName));
+
+
+            
+            services.AddOptions<AutoRateUpdateTime>().BindConfiguration(AutoRateUpdateTime.SectionName).ValidateDataAnnotations();
+
+            return services;
         }
     }
 }

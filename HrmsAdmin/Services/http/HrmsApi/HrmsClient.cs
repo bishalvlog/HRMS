@@ -71,12 +71,9 @@ namespace HrmsSystemAdmin.Web.Services.http.HrmsApi
         private HttpClient CreateHttpClient()
         {
             var httpClient = _httpClientFactory.CreateClient(HrmsApiDefaults.HttpClientHrmsApi);
-
             var accessToken = _httpContextAccessor.HttpContext.Request.Headers[HrmsApiDefaults.HeaderHrmsApiAccessToken];
-
             if (!string.IsNullOrWhiteSpace(accessToken))
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
             return httpClient;
         }
     }
