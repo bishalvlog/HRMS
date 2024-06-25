@@ -1,10 +1,13 @@
 ﻿using DigitalGold.Core.Configuration;
 using DigitalGold.Services.Tokens.RefreshTokens;
+using HRMS.Core.Interfaces.Logging;
 using HRMS.Core.Interfaces.Menu;
 using HRMS.Core.Interfaces.Users;
 using HRMS.Data.Comman.Constrant;
 using HRMS.Data.Dtos.Response;
+using HRMS.Data.Logging;
 using HRMS.Data.Repository.ClientMenu;
+using HRMS.Data.Repository.Logging;
 using HRMS.Data.Repository.Menu;
 using HRMS.Data.Repository.Users;
 using HRMS.Services.Auth;
@@ -34,6 +37,12 @@ namespace HRMS.Extensions
             services.AddScoped<IUserRoleServices, UserRoleServices>();
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IUserAuthService,  UserAuthService>();
+            #endregion
+            #region logger
+            services.AddScoped<IExceptionLogRepository,ExceptionalLogRepository>();
+            services.AddScoped<IUserActivityLogRepository, UserActivityLogRepository>();
+            services.AddScoped<IExceptionLogService, ExceptionLogService>();
+            
             #endregion
 
             #region AuthServices

@@ -18,7 +18,7 @@ namespace HrmsSystemAdmin.Web.Services.http.HrmsApi
 
         public async Task<(HttpStatusCode statusCode, T responseType)> DeleteAsync<T>(string requestUri)
         {
-           if(String.IsNullOrWhiteSpace(requestUri)) 
+           if(string.IsNullOrWhiteSpace(requestUri)) 
                 requestUri = string.Empty;
             var httpClient = GetHttpClient();
             using var response = await httpClient.DeleteAsync(requestUri);
@@ -31,7 +31,7 @@ namespace HrmsSystemAdmin.Web.Services.http.HrmsApi
 
         public async Task<(HttpStatusCode statusCode, T responseType)> GetAsync<T>(string requestUri)
         {
-            if(String.IsNullOrWhiteSpace(requestUri))
+            if(string.IsNullOrWhiteSpace(requestUri))
                 requestUri = string.Empty;
             var httpClient = GetHttpClient();
             using var response = await httpClient.GetAsync(requestUri);
@@ -47,20 +47,28 @@ namespace HrmsSystemAdmin.Web.Services.http.HrmsApi
 
         public async Task<(HttpStatusCode statusCode, T responseType)> PostAsync<T>(string requestUri, HttpContent content)
         {
-           if(String.IsNullOrWhiteSpace(requestUri))
-                requestUri = string.Empty;
-           var httpClient = GetHttpClient();    
-            using var response = await httpClient.PostAsync(requestUri, content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<T>(responseString);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(requestUri))
+                    requestUri = string.Empty;
+                var httpClient = GetHttpClient();
+                using var response = await httpClient.PostAsync(requestUri, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseObj = JsonConvert.DeserializeObject<T>(responseString);
 
-            return (response.StatusCode, responseObj);
+                return (response.StatusCode, responseObj);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+           
         }
 
         public async Task<(HttpStatusCode statusCode, T responseType)> PutAsync<T>(string requestUri, HttpContent content)
         {
-            if(String.IsNullOrWhiteSpace(requestUri))
-                requestUri = String.Empty;
+            if(string.IsNullOrWhiteSpace(requestUri))
+                requestUri = string.Empty;
             var httpClient = GetHttpClient();
             using var response = await httpClient.PutAsync(requestUri, content);
             var responseString = await response.Content.ReadAsStringAsync();
@@ -72,6 +80,7 @@ namespace HrmsSystemAdmin.Web.Services.http.HrmsApi
         {
             var httpClient = _httpClientFactory.CreateClient(HrmsApiDefaults.HttpClientHrmsApi);
             var accessToken = _httpContextAccessor.HttpContext.Request.Headers[HrmsApiDefaults.HeaderHrmsApiAccessToken];
+
             if (!string.IsNullOrWhiteSpace(accessToken))
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             return httpClient;
