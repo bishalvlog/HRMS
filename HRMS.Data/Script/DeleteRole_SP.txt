@@ -1,0 +1,40 @@
+﻿USE [HRMS_Test]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_role_deleteRole]    Script Date: 7/3/2024 4:02:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER Procedure [dbo].[sp_role_deleteRole](
+    @Id int = 0,
+    @StatusCode int = null output,
+    @MsgType varchar(10) = null output,
+    @MsgText varchar(100) = null output
+)
+AS 
+BEGIN
+    -- Initialize output parameters
+    SET @StatusCode = 400;
+    SET @MsgType = 'Error';
+    SET @MsgText = 'Bad Request';
+
+    -- Check if user exists
+    IF NOT EXISTS (SELECT 1 FROM tbl_roles WHERE Id = @Id) 
+    BEGIN
+        SET @MsgText = 'Roles does not exist!';
+        SET @StatusCode = 404;
+        RETURN;
+    END
+
+    -- Delete the user
+    DELETE FROM [dbo].[tbl_roles]
+    WHERE Id = @Id;
+
+    -- Set success message
+    SET @MsgType = 'Success';
+    SET @MsgText = 'Role deleted successfully.';
+    SET @StatusCode = 200;
+    RETURN;
+END
+
+
