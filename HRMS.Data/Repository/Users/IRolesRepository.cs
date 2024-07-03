@@ -15,8 +15,8 @@ namespace HRMS.Data.Repository.Users
         Task<(SpBaseMessageResponse,IEnumerable<AppRole>)> GetRolesAsync();
         Task<(SpBaseMessageResponse,AppRole)> GetRolesByIdAsync (int id);
         Task<(SpBaseMessageResponse,AppRole)> GetRolesByNameAsync(string roleName);
-        Task<(SpBaseMessageResponse,AppRole)>UpdateRolesAsync(AppRole appRole);
-       
+        Task<(SpBaseMessageResponse,AppRole)> UpdateRolesAsync(AppRole appRole);
+        Task<(SpBaseMessageResponse,AppRole)> DeleteRoleAsync(int id);  
        
 
 
