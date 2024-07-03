@@ -143,5 +143,25 @@ namespace HRMS.Data.Repository.Users
             return (spMessage,Roleupdate);
 
         }
+
+        public async Task<(SpBaseMessageResponse, AppRole)> DeleteRoleAsync(int id)
+        {
+            using var connection = DbConnectionManager.ConnectDb();
+            var param = new DynamicParameters();
+            param.Add("@id", id);
+            param.Add("@StatusCode", dbType: DbType.Int32, direction: ParameterDirection.InputOutput);
+            param.Add("@MsgType", dbType: DbType.String, size: 10, direction: ParameterDirection.InputOutput);
+            param.Add("@MsgText", dbType: DbType.String, size: 100, direction: ParameterDirection.InputOutput);
+
+            var roles = await connection
+                .QueryFirstOrDefaultAsync<AppRole>("[dbo].[sp_role_deleteRole]", param, commandType: CommandType.StoredProcedure);
+            var statusCode = param.Get<int>("@StatusCode");
+            var msgType = param.Get<string>("@MsgType");
+            var msgText = param.Get<string>("@MsgText");
+
+            var spMsgRes = new SpBaseMessageResponse { StatusCode = statusCode, MsgText = msgText, MsgTypes = msgType };
+
+            return (spMsgRes, roles);
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace HRMS.Services.Users
         Task<(HttpStatusCode, ApiResponseDto)> GetRolesByIdAsync(int id);
         Task<(HttpStatusCode, ApiResponseDto)> GetRolesAsync();
         Task<(HttpStatusCode, ApiResponseDto)> UpdateRolesAsync(UpdateRoleDto update);
+        Task<(HttpStatusCode, ApiResponseDto)> DeleteRoleAsync(int id);
 
     }
 }
