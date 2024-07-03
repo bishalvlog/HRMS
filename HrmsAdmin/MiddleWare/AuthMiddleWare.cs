@@ -86,6 +86,13 @@ namespace HrmsSystemAdmin.Web.MiddleWare
             await _next(httpContext);
         }
     }
+    public static class AuthMiddlewareExtension
+    {
+        public static IApplicationBuilder UseAuthMiddleware(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<AuthMiddleWare>();
+        }
+    }
 
 
 }

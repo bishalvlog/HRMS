@@ -33,7 +33,7 @@ namespace HrmsSystemAdmin.Web
             {
                 client.DefaultRequestHeaders.Clear();
                 client.BaseAddress = new Uri(_config.GetValue<string>("HrmsApi:BaseUrl"));
-                client.Timeout = new TimeSpan(0, 0, 30);
+                client.Timeout = new TimeSpan(0, 0, 600);
             });
             services.AddAutoMapper(typeof(MappingProfiles));
             services.AddValidatorsFromAssemblyContaining<Startup>();

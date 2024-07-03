@@ -16,7 +16,6 @@ namespace HRMS.Services.Commond.Helpers
 {
     public static class LogHelpers
     {
-
         public static async Task<UserActivitylogParam>GetUserActivityLogAsync(HttpContext context, IHostEnvironment hostEnv = null, bool logRequestBody = true, string UserAction = "")
         {
             var remoteIpAddress = context.GetIpAddress();
@@ -93,7 +92,7 @@ namespace HRMS.Services.Commond.Helpers
                 appExceptionLogParam.UserAgent = userAgent;
                 appExceptionLogParam.Headers = requestHeader;
                 appExceptionLogParam.UserName = userName;
-                if(isForm) appExceptionLogParam.FormData = requestBody;
+                if(isForm) appExceptionLogParam.FormDate = requestBody;
                 else appExceptionLogParam.RequestBody = requestBody;
             }
             return appExceptionLogParam;

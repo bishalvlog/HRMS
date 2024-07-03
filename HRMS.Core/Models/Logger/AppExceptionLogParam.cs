@@ -14,7 +14,7 @@ namespace HRMS.Core.Models.Logger
         public string ControllerName { get; set; }  
         public string ActionName { get; set; }  
         public string QuerString { get; set; }  
-        public string FormData { get; set; }    
+        public string FormDate { get; set; }    
         public string Headers { get; set; }  
         public string RequestUrl { get; set; }      
         public string HttpMethod { get; set; }  

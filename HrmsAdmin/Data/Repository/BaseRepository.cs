@@ -11,7 +11,7 @@ namespace HrmsSystemAdmin.Web.Data.Repository
     {
         protected virtual StringContent GetJsonStringContent(object inputDataObj)
         {
-            return new StringContent(JsonConvert.SerializeObject(inputDataObj),Encoding.UTF8, "applicaton/json");
+            return new StringContent(JsonConvert.SerializeObject(inputDataObj),Encoding.UTF8, "application/json");
         }
         protected virtual MultipartFormDataContent AddUserFormContent (UserDetails inputDataObj)
         {

@@ -1,4 +1,5 @@
 ﻿using HRMS.Core.Models.Logger;
+using HRMS.Data.Repository.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,15 @@ namespace HRMS.Services.Logger
 {
     public class ExceptionLogService : IExceptionLogService
     {
-        public Task LogAsyn(AppExceptionLogParam appExceptionLogParam)
+        private readonly IExceptionLogRepository _exceptionRepository;
+
+        public ExceptionLogService(IExceptionLogRepository exceptionRepository)
         {
-            return null;
+            _exceptionRepository = exceptionRepository;
+        }
+        public async Task LogAsyn(AppExceptionLogParam appExceptionLogParam)
+        {
+            await _exceptionRepository.AddAsync(appExceptionLogParam);
         }
     }
 }
