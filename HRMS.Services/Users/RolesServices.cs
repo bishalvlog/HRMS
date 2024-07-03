@@ -61,5 +61,12 @@ namespace HRMS.Services.Users
             return (HttpStatusCode.OK,new ApiResponseDto { Success = true, Message = "Roles Update Successfully",Data  = rolesCreate}); 
 
         }
+
+        public async Task<(HttpStatusCode, ApiResponseDto)> DeleteRoleAsync(int id)
+        {
+            var (spMsgResponse, role) = await _rolesRepository.DeleteRoleAsync(id);
+            if (spMsgResponse.StatusCode != 200) return GetErrorResponseFromSprocMessage(spMsgResponse);
+            return (HttpStatusCode.OK, new ApiResponseDto { Success = true, Message = spMsgResponse.MsgText, Data = role });
+        }
     }
 }
