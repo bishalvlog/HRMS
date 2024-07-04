@@ -1,4 +1,4 @@
-﻿use HRMS_Test
+use HRMS_Test
 Go
 CREATE TABLE Tbl_Countries (
     Id int PRIMARY KEY,
