@@ -52,5 +52,12 @@ namespace HRMS.Areas.Admin
             return GetResponseFromStatusCode(status, response);
         }
 
+        [HttpDelete("Roles_Delete")]
+        public async Task<IActionResult>DeleteRolesAsync (int Id)
+        {
+            var (status, response) = await _roleServices.DeleteRoleAsync(Id);
+            return GetResponseFromStatusCode(status, response);
+        }
+
     }
 }
