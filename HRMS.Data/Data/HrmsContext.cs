@@ -54,6 +54,8 @@ namespace HRMS.Data.Data
 
         public virtual DbSet<TblUser> TblUsers {  get; set; }
 
+        public virtual DbSet<TblDateLog> TblDateLog { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
