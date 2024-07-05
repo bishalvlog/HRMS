@@ -16,9 +16,9 @@ namespace HRMS.Areas.Admin
         {
             _userAuthService = userAuthService; 
         }
-        [AllowAnonymous]
         [HttpPost("token")]
-       public async Task<IActionResult> Token([FromBody] UserAuthRequestDto token)
+        [AllowAnonymous]
+        public async Task<IActionResult> Token([FromBody] UserAuthRequestDto token)
        {
             var (status,response) = await _userAuthService.TokenAsync(token);
             return GetResponseFromStatusCode(status, response);

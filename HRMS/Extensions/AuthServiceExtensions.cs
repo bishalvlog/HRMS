@@ -12,6 +12,7 @@ namespace HRMS.Extensions
         public static IServiceCollection AddAuthService(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication()
+
             .AddJwtBearer(CustomerJwtBearerAuthenticationOptions.DefaultSchema,options =>
             {
                 var customerJwtOptions = configuration.GetSection(CustomerJwtOptions.JwtOption).Get<CustomerJwtOptions>();
@@ -29,23 +30,23 @@ namespace HRMS.Extensions
                    IssuerSigningKey = customerJwtOptions.IssueSignKey
                 };
             })
-                .AddJwtBearer(UserJwtBearerAuthenticationOptions.DefaultSchema, options =>
+            .AddJwtBearer(UserJwtBearerAuthenticationOptions.DefaultSchema, options =>
+            {
+                var userJwtOptions = configuration.GetSection(UserJwtOptions.JwtOptions).Get<UserJwtOptions>();
+                options.SaveToken = false;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    var userJwtOptions = configuration.GetSection(UserJwtOptions.JwtOptions).Get<UserJwtOptions>();
-                    options.SaveToken = false;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ClockSkew = TimeSpan.Zero,
-                        ValidAudience = userJwtOptions.validAudience,
-                        ValidIssuer = userJwtOptions.validUser,
-                        IssuerSigningKey = userJwtOptions.IssueSignKey
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidAudience = userJwtOptions.validAudience,
+                    ValidIssuer = userJwtOptions.validUser,
+                    IssuerSigningKey = userJwtOptions.IssueSignKey
+                };
+            });
 
             services.AddAuthorization(options =>
             {
