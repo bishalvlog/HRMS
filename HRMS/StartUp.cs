@@ -35,7 +35,9 @@ namespace HRMS
 
             services.AddLazyCache();
             services.AddAutoMapper(typeof(MappingProfiles));
+
             services.AddConfig();
+            services.AddAuthService(_config);
             services.AddIdentityService(_config);
             services.ConfigureApplicationServices(_config);
             services.AddHttpClient();

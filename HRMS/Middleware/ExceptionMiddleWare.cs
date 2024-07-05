@@ -10,13 +10,15 @@ namespace HRMS.Middleware
 {
     public class ExceptionMiddleWare
     {
-        public readonly RequestDelegate _requestDelegate;
-        public readonly IHostEnvironment _env;
+        private readonly RequestDelegate _requestDelegate;
+        private readonly IHostEnvironment _env;
+
         public ExceptionMiddleWare(RequestDelegate requestDelegate, IHostEnvironment env)
         {
             _requestDelegate = requestDelegate; 
             _env = env;
         }
+
         public async Task InvokeAsync(HttpContext content, IExceptionLogService exceptionLogService)
         {
             try
